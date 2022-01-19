@@ -146,20 +146,20 @@ public class BotHandlers
                 replyMarkup: await coursesButton.GetButtonsAsync(user.Language)
             );
         }
-        if(CoursesButton.GetCourses().FirstOrDefault(c => c.Title == message.Text) != default)
+        if(CoursesButton.GetCources().FirstOrDefault(c => c.Title == message.Text) != default)
         {
-            var course = CoursesButton.GetCourses().FirstOrDefault(c => c.Title == message.Text);
+            var course = CoursesButton.GetCources().FirstOrDefault(c => c.Title == message.Text);
             using (Stream stream = System.IO.File.OpenRead($"Data/Images/{course.BannerId}"))
             {
                 await client.SendPhotoAsync(
                     chatId: user.ChatId,
                     photo: stream,
-                    caption: $"<b>{course.Title}</b>\n\n{course.Description}\n\n<b>Kurs davomiyligi:</b> {course.DurationInMonth} oy.\n\n<b>Kurs narhi:</b> {course.CostInUzs} so'm.\n\n@ilmhubot",
+                    caption: $"<b>{course.Title}</b>\n\n{course.Description}\n\n<b>Kurs davomiyligi:</b> {course.Duration} oy.\n\n<b>Kurs narhi:</b> {course.CostInUzs} so'm.\n\n@ilmhubot",
                     parseMode:ParseMode.Html,
                     replyMarkup: MessageBuilder.Enroll(user.Language)
                 );
             }
-            user.InterestedCourse = message.Text;
+            user.InterestedCources = message.Text;
             await _storage.UpdateUserAsync(user);
         }
         if(Language.Enroll(user.Language) == message.Text)
@@ -167,7 +167,7 @@ public class BotHandlers
             var newClient = new NewClient(){
                 UserName = user.Username,
                 FullName = user.Fullname,
-                InterestedCourse = user.InterestedCourse,
+                InterestedCources = user.InterestedCources,
                 Phone = user.PhoneNumber
             };
             await _sheetsServices.AddNewClient(newClient);

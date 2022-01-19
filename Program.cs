@@ -1,25 +1,22 @@
+using bot.Entities;
+using bot.Handlers;
+using bot.Services;
+using Microsoft.EntityFrameworkCore;
+using Telegram.Bot;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<BotDbContext>(options => 
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DbConnection"));
+}, ServiceLifetime.Singleton);
+builder.Services.AddSingleton<TelegramBotClient>(b => new TelegramBotClient(builder.Configuration.GetConnectionString("Token")));
+builder.Services.AddHostedService<Bot>();
+builder.Services.AddTransient<BotHandlers>();
+builder.Services.AddTransient<IStorageService, DbStorageService>();
+builder.Services.AddSingleton<GoogleSheetsHelpers>();
+builder.Services.AddSingleton<GoogleSheetsServices>();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
